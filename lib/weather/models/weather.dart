@@ -56,9 +56,19 @@ extension StringWeatherX on String {
       case '百分比':
         return '%';
       case 'C':
-        return '°C';
+        return '°';
       default:
         return this;
     }
+  }
+}
+
+extension CustomDateTimeX on DateTime {
+  String get toCustomTime {
+    final date = day > DateTime.now().day ? '明' : '今';
+    final hour = this.hour > 12 ? this.hour - 12 : this.hour;
+    final minute = this.minute.toString().padLeft(2, '0');
+    final period = this.hour >= 12 ? 'PM' : 'AM';
+    return '$date $hour:$minute $period';
   }
 }

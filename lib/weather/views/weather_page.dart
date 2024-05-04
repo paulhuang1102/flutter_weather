@@ -9,11 +9,17 @@ class WeatherPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => WeatherBloc(context.read<WeatherRepository>()),
-      child: const Scaffold(
-        body: Column(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            '台灣地區天氣查詢',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+        body: const Column(
           children: [
             SearchBar(),
-            SearchView(),
+            Expanded(child: SearchView()),
           ],
         ),
       ),
@@ -44,21 +50,21 @@ class _SearchBarState extends State<SearchBar> {
     super.dispose();
   }
 
-  String get _text => _textController.text;
+  String get _text => _textController.text.trim();
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      child: Row(
+        children: [
+          Expanded(
             child: TextField(
               controller: _textController,
               autocorrect: false,
               onChanged: (text) {
                 _weatherBloc.add(
-                  SearchFetch(text: text),
+                  SearchFetch(text: _text),
                 );
               },
               decoration: const InputDecoration(
@@ -66,16 +72,16 @@ class _SearchBarState extends State<SearchBar> {
               ),
             ),
           ),
-        ),
-        TextButton(
-          onPressed: () {
-            _weatherBloc.add(
-              SearchFetch(text: _text),
-            );
-          },
-          child: const Text('確認'),
-        )
-      ],
+          OutlinedButton(
+            onPressed: () {
+              _weatherBloc.add(
+                SearchFetch(text: _text),
+              );
+            },
+            child: const Text('確認'),
+          )
+        ],
+      ),
     );
   }
 }
@@ -85,13 +91,15 @@ class SearchView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<WeatherBloc, WeatherState>(builder: (context, state) {
-      return switch (state) {
-        WeatherStateInitial() => const WeatherInitial(),
-        WeatherStateLoading() => const WeatherLoading(),
-        WeatherStateSuccess() => WeatherResultView(state.weather),
-        WeatherStateError() => WeatherErrorView(state),
-      };
-    });
+    return Center(
+      child: BlocBuilder<WeatherBloc, WeatherState>(builder: (context, state) {
+        return switch (state) {
+          WeatherStateInitial() => const WeatherInitial(),
+          WeatherStateLoading() => const WeatherLoading(),
+          WeatherStateSuccess() => WeatherResultView(state.weather),
+          WeatherStateError() => WeatherErrorView(state),
+        };
+      }),
+    );
   }
 }

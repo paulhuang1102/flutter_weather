@@ -9,6 +9,7 @@ void main() {
   final weatherRepo = WeatherRepository(
     WeatherClient(
         baseUrl: 'https://opendata.cwa.gov.tw/api',
+        // TODO: For Demo, it should be ignored
         authCode: 'CWA-F1F0DA9F-7EC4-4024-8B81-16DE8BEC0874'),
   );
   WidgetsFlutterBinding.ensureInitialized();

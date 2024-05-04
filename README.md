@@ -1,6 +1,10 @@
 # weather_report
 
-A new Flutter project.
+A Flutter app using the BLoC to query weather information.
+
+# Env
+- Flutter 3.19.3
+- Dart 3.3.1
 
 ## Getting Started
 

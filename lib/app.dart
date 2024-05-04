@@ -12,7 +12,19 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return RepositoryProvider.value(
       value: _weatherRepo,
-      child: const MaterialApp(home: WeatherPage()),
+      child: MaterialApp(
+        theme: ThemeData(
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.blueAccent,
+            elevation: 0,
+          ),
+          textTheme: const TextTheme(
+            titleLarge: TextStyle(color: Colors.white),
+          ),
+          primaryColor: Colors.greenAccent,
+        ),
+        home: const WeatherPage(),
+      ),
     );
   }
 }

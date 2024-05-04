@@ -5,8 +5,6 @@ class WeatherInitial extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('在上方輸入框填入地區，以搜尋天氣資訊'),
-    );
+    return const Text('在上方輸入框填入地區，以搜尋天氣資訊');
   }
 }
