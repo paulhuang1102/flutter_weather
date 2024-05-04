@@ -13,7 +13,7 @@ EventTransformer<Event> debounce<Event>(Duration duration) {
 }
 
 class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
-  WeatherBloc(this._weatherRepo) : super(WeatherInitial()) {
+  WeatherBloc(this._weatherRepo) : super(WeatherStateInitial()) {
     on<SearchFetch>(
       _onSearchFetch,
       transformer: debounce(_duration),
@@ -28,7 +28,7 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
   ) async {
     final searchTerm = event.text;
 
-    if (searchTerm.isEmpty) return emit(WeatherInitial());
+    if (searchTerm.isEmpty) return emit(WeatherStateInitial());
 
     emit(WeatherStateLoading());
 
@@ -36,11 +36,57 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
       final result = await _weatherRepo.search(searchTerm);
 
       if (result.elements.isEmpty) {
-        return emit(const WeatherStateError(ErroType.inputInValid));
+        return emit(
+          WeatherStateError(
+            ErrorType.inputInValid,
+            location: searchTerm,
+          ),
+        );
       }
-      emit(WeatherStateSuccess());
+
+      final dataLength =
+          result.elements[result.elements.keys.first]?.length ?? 0;
+
+      final List<WeatherData> data = [];
+
+      for (int i = 0; i < dataLength; i++) {
+        DateTime? startTime;
+        DateTime? endTime;
+        Map<String, WeatherParameter> parameterData = {};
+        for (var v in result.elements.keys) {
+          final chunks = result.elements[v];
+          final param = chunks?[i];
+
+          if (param == null) {
+            continue;
+          }
+          startTime ??= param.startTime;
+          endTime ??= param.endTime;
+
+          parameterData[v] = 
+              WeatherParameter(param.parameterName, unit: param.parameterUnit?.toUnit);
+        }
+
+        data.add(WeatherData(
+          startTime: startTime!,
+          endTime: endTime!,
+          parameters: parameterData,
+        ));
+      }
+
+      emit(WeatherStateSuccess(Weather(locationName: searchTerm, data: data)));
     } on SearchResultError catch (e) {
-      emit(WeatherStateError(ErroType.endpointError, msg: e.message));
+      emit(WeatherStateError(
+        ErrorType.endpointError,
+        msg: e.message,
+        location: searchTerm,
+      ));
+    } catch (e) {
+      emit(WeatherStateError(
+        ErrorType.system,
+        msg: e.toString(),
+        location: searchTerm,
+      ));
     }
   }
 }

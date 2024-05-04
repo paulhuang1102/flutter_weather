@@ -26,7 +26,7 @@ class WeatherClient {
       final locations = records['location'] as List<dynamic>;
 
       if (locations.isEmpty) {
-        return SearchResult(locationName: location, elements: []);
+        return SearchResult(locationName: location, elements: {});
       }
 
       return SearchResult.fromJson(locations[0]);

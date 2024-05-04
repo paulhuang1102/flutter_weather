@@ -87,11 +87,10 @@ class SearchView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<WeatherBloc, WeatherState>(builder: (context, state) {
       return switch (state) {
-        WeatherInitial() => Text('Intitial'),
-        WeatherStateLoading() => Text('Loading'),
-        WeatherStateEmpty() => Text('Empty'),
-        WeatherStateSuccess() => Text('Success'),
-        WeatherStateError() => Text('Error'),
+        WeatherStateInitial() => const WeatherInitial(),
+        WeatherStateLoading() => const WeatherLoading(),
+        WeatherStateSuccess() => WeatherResultView(state.weather),
+        WeatherStateError() => WeatherErrorView(state),
       };
     });
   }
